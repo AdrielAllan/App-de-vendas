@@ -6,6 +6,7 @@ import {
   Button,
   FlatList,
   StyleSheet,
+  Alert,
 } from "react-native";
 
 const ProdutoScreen = ({ produtos, setProdutos }) => {
@@ -13,18 +14,36 @@ const ProdutoScreen = ({ produtos, setProdutos }) => {
   const [produtoPreco, setProdutoPreco] = useState("");
 
   const adicionarProduto = () => {
-    if (produtoNome && produtoPreco) {
-      const novoProduto = {
-        id: Date.now().toString(),
-        nome: produtoNome,
-        preco: parseFloat(produtoPreco),
-      };
-      setProdutos([...produtos, novoProduto]);
-      setProdutoNome("");
-      setProdutoPreco("");
-    } else {
+    // Verificação se os campos estão preenchidos
+    if (!produtoNome || !produtoPreco) {
       alert("Preencha todos os campos");
+      return;
     }
+
+    // Verificar se o preço é um número válido
+    console.log("Valor do Preço antes da verificação:", produtoPreco); // Depuração
+    const precoNumerico = parseFloat(produtoPreco);
+    console.log("Preço após conversão para número:", precoNumerico); // Depuração
+
+    if (isNaN(precoNumerico) || precoNumerico <= 0) {
+      console.log("Preço inválido"); // Depuração para verificar se a condição é atingida
+      Alert.alert("Erro", "Por favor, insira um preço válido.");
+      return;
+    }
+
+    // Adiciona o produto
+    const novoProduto = {
+      id: Date.now().toString(),
+      nome: produtoNome,
+      preco: precoNumerico,
+    };
+
+    // Atualiza o estado com o novo produto
+    setProdutos([...produtos, novoProduto]);
+
+    // Limpa os campos de entrada
+    setProdutoNome("");
+    setProdutoPreco("");
   };
 
   return (
